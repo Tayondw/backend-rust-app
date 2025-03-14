@@ -22,12 +22,12 @@ async fn main() {
     let app = Router::new()
         .route("/todos", post(handlers::create_todo))
         .route("/todos", get(handlers::get_todos))
-        .route("/todos/:id", get(handlers::get_todo))
-        .route("/todos/:id", post(handlers::update_todo))
-        .route("/todos/:id", delete(handlers::delete_todo))
+        .route("/todos/{id}", get(handlers::get_todo))
+        .route("/todos/{id}", post(handlers::update_todo))
+        .route("/todos/{id}", delete(handlers::delete_todo))
         .with_state(db_connection.clone());
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:8080").await.unwrap();
     let server = axum::serve(listener, app).with_graceful_shutdown(shutdown_signal());
 
     tokio::spawn(async move {
@@ -40,13 +40,13 @@ async fn main() {
 }
 
 /*
-Line 4-10: Set up the database connection pool
+Line 17-20: Set up the database connection pool
 
-Line 12-18: Define the routes for our API
+Line 22-28: Define the routes for our API
 
-Line 20-21: Set up the server address
+Line 30-31: Set up the server address
 
-Line 23-30: Log application startup or failure
+Line 33-40: Log application startup or failure
 */
 
 async fn shutdown_signal() {
