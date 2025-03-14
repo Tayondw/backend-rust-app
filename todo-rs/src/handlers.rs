@@ -1,3 +1,20 @@
+use std::sync::Arc;
+
+use axum::{
+    extract::State,
+    http::StatusCode,
+    Json,
+};
+use axum::extract::Path;
+use diesel::prelude::*;
+use diesel::r2d2;
+use diesel::r2d2::ConnectionManager;
+use crate::models::{NewTodo, Todo, UpdateTodo};
+use crate::schema::todos;
+use crate::schema::todos::id;
+
+pub type DbPool = Arc<r2d2::Pool<ConnectionManager<PgConnection>>>;
+
 // POST
 /*
 In this handler, we accept NewTodo request and will create new record in database. In axum handlers, you can see a state beside request body and they are used for passing dependencies like database connection pools to use for db operations.
@@ -75,7 +92,8 @@ pub async fn delete_todo(
 ) -> StatusCode {
     let mut conn = db.get().map_err(|_| StatusCode::INTERNAL_SERVER_ERROR).unwrap();
 
-    let _ =diesel::delete(todos::table.filter(id.eq(todo_id)))
+    // this declaration is to ignore the variable
+    let _ =diesel::delete(todos::table.filter(id.eq(todo_id))) 
         .execute(&mut conn)
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR).unwrap();
 
