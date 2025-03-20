@@ -1,18 +1,20 @@
-use std::sync::Arc;
+use std::sync::Arc; // Arc is used to share ownership of the db connection pool across multiple handlers safely
 
 use axum::{
-    extract::State,
-    http::StatusCode,
-    Json,
+    extract::State, // extracts global state (like the DB connection pool)
+    http::StatusCode, // used for HTTP status codes
+    Json, // handles JSON serialization or deserialization
 };
-use axum::extract::Path;
-use diesel::prelude::*;
-use diesel::r2d2;
-use diesel::r2d2::ConnectionManager;
-use crate::models::{NewTodo, Todo, UpdateTodo};
-use crate::schema::todos;
-use crate::schema::todos::id;
+use axum::extract::Path; // extracts the path parameters from the request
+use diesel::prelude::*; // imports Diesel's query builder and ORM functionality
+use diesel::r2d2; // Diesel's connection pooling
+use diesel::r2d2::ConnectionManager; // Manages database connections in the pool
+use crate::models::{NewTodo, Todo, UpdateTodo}; // importing the models
+use crate::schema::todos; // importing todos table
+use crate::schema::todos::id; // importing the id column from the todos table
 
+// define DbPool as a shared reference (Arc) to a db connection pool
+// use r2d2::Pool to manage PostgreSQL connections
 pub type DbPool = Arc<r2d2::Pool<ConnectionManager<PgConnection>>>;
 
 // POST
